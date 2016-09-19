@@ -80,10 +80,5 @@ if __name__ == "__main__":
 			appartment.interesting_label = "NOT_INTERESTING"
 			appartment.save()
 
-	for appartment in Appartment.select().where(Appartment.interesting_label == "INTERESTING"):
-		post_appartment_to_fb(appartment.raw_title, appartment.price, appartment.url)
-		appartment.posted = True
-		appartment.save()
-
 
 
