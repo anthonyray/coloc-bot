@@ -56,7 +56,10 @@ def save_entry_to_db(raw_json_entry):
 	raw_date = raw_json_entry["date"]
 
 	price = extract_price(raw_price)
-
+	print raw_title
+	print raw_price
+	print raw_description
+	print raw_date
 	Appartment.get_or_create(url=url, raw_title=raw_title, raw_date=raw_date, raw_description=raw_description, raw_price=raw_price, price=price)
 
 
@@ -68,7 +71,7 @@ def is_appartment_interesting(appartment):
 
 
 if __name__ == "__main__":
-	apparts = get_json_from_file('data/run_results_01.json')["selection1"]
+	apparts = get_json_from_file('data/run_results_02.json')["selection1"]
 	
 	map(save_entry_to_db, apparts) # Save new appartments
 
