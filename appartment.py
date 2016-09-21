@@ -15,6 +15,8 @@ class Appartment(Model):
 	price = FloatField(default=0.0)
 	posted = BooleanField(default=False)
 
+	appartment_sharing = CharField(default="UNKNOWN")
+
 	interesting_label = CharField(default="UNKNOWN")
 	
 

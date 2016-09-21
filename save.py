@@ -32,6 +32,37 @@ def extract_price(raw_price):
 
 	return refined_price
 
+def extract_area(raw_description):
+	pass
+
+def extract_appartment_sharing(raw_description):
+	raw_description = raw_description.lower()
+	trigger = "coloc"
+	negative_triggers = ["pas","refus","non"]
+	positive_triggers = ["accept","ok","possible"]
+
+	if trigger in raw_description:  # Coloc is mentionned. 
+		neighboors = get_trigger_word_neighboring(raw_description, trigger)
+		if sum( [any(neg_trigger in neighboor for neg_trigger in negative_triggers) for neighboor in neighboors]  ) > 0: # negative trigger words in neighboors -> NOT ACCEPTED:
+			return "NOT_ACCEPTED"
+		else:  # No negative triggers in neighboors
+			if sum([any(pos_trigger in neighboor for pos_trigger in positive_triggers ) for neighboor in neighboors]) > 0: # There is positive triggers in neighboors
+				return "ACCEPTED"
+			else:
+				return "UNKNOWN"
+	else:
+		return "UNKNOWN"
+
+
+def get_trigger_word_neighboring(raw_description, trigger):
+	trigger_index = raw_description.index(trigger)
+	right_neighbors = raw_description[:trigger_index].split(" ")[-3:]
+	left_neighbors = raw_description[trigger_index:].split(" ")[:3]
+
+	return right_neighbors + left_neighbors
+
+def extract_number_of_rooms(raw_description):
+	pass
 
 def vectorize_entry(raw_json_entry):
 	url = raw_json_entry['url']
@@ -43,6 +74,7 @@ def vectorize_entry(raw_json_entry):
 
 	date = extract_date(raw_date)
 	price = extract_price(raw_price)
+	appartment_sharing = extract_appartment_sharing(raw_description)
 
 	print price
 	
@@ -56,11 +88,13 @@ def save_entry_to_db(raw_json_entry):
 	raw_date = raw_json_entry["date"]
 
 	price = extract_price(raw_price)
+	appartment_sharing = extract_appartment_sharing(raw_description)
+
 	print raw_title
 	print raw_price
 	print raw_description
 	print raw_date
-	Appartment.get_or_create(url=url, raw_title=raw_title, raw_date=raw_date, raw_description=raw_description, raw_price=raw_price, price=price)
+	Appartment.get_or_create(url=url, defaults={'raw_title':raw_title, 'raw_date':raw_date, 'raw_description':raw_description, 'raw_price':raw_price, 'price':price, 'appartment_sharing': appartment_sharing})
 
 
 def is_appartment_interesting(appartment):
@@ -71,7 +105,7 @@ def is_appartment_interesting(appartment):
 
 
 if __name__ == "__main__":
-	apparts = get_json_from_file('data/run_results_02.json')["selection1"]
+	apparts = get_json_from_file('data/run_results_05.json')["selection1"]
 	
 	map(save_entry_to_db, apparts) # Save new appartments
 
