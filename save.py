@@ -98,7 +98,7 @@ def save_entry_to_db(raw_json_entry):
 
 
 def is_appartment_interesting(appartment):
-	if (appartment.price <= 3600.0):
+	if (appartment.price <= 3600.0 and appartment.appartment_sharing != "NOT_ACCEPTED"):
 		return True
 	else:
 		return False
